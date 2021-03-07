@@ -5,7 +5,7 @@ of what I lean into creating this basic example of a port scanner.
 
 ## Features
 
-- multi-threaded scans for better performance and quick results
+- Supports Multi-threaded scans for better performance and quick results
 - Scans all ports by default unless a range is specified.
   - Right now if no range is entered, it scans all 65535 ports.
 - Supports domain names and IPs by default.
@@ -13,7 +13,7 @@ of what I lean into creating this basic example of a port scanner.
 - Supports multiple targets separated by commas: 
     - Example: **facebook.com,192.168.1.1,google.com,127.0.0.1**
   
-## Enhancements
+## Future Enhancements
 - Add the scan option to have the top 1000 TCP ports scanned
 - add support to specify ports specific ports instead of range only.
 - Add support to have results collected and saved to a file

@@ -5,20 +5,33 @@ from colorama import Fore
 import concurrent.futures
 import functools
 import time
+import json
+import re
 
-# General scan settings
+# General settings
 lameScan_config = {
     'debug': False,
     'max_thread_workers': 20
 }
+
+# General scan specific settings
 scan_config = {
     'range': {
         'low_port': 0,
         'high_port': 65535
     },
-    'timeout': 0.4,
+    'timeout': 0.3,
     'show_closed_ports': False,
     'run_top1k_ports': False
+}
+
+# Scan results
+scan_results = {
+    'targets': [],
+    'scan_start': 0,
+    'scan_end': 0,
+    'open_ports_found': [],
+    'ports_with_banner': []
 }
 
 # to be cleaned, some global values
@@ -164,11 +177,14 @@ def scan_port(r_ip, r_port):
             banner = get_banner(sock)
             banner = banner.decode().strip("\n")
             print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port} - Banner: {banner}' + Fore.WHITE)
+            scan_results['open_ports_found'].append(r_port)
+            scan_results['ports_with_banner'].append(f'{r_port}: {banner}')
         except:
             print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port}' + Fore.WHITE)
+            scan_results['open_ports_found'].append(r_port)
     except:
         if scan_config['show_closed_ports']:
-            print(Fore.LIGHTYELLOW_EX + f'[-] Host: {r_ip} -> Port {r_port} is closed' + Fore.WHITE + '\n')
+            print('\n' + Fore.LIGHTYELLOW_EX + f'[-] Host: {r_ip} -> Port {r_port} is closed' + Fore.WHITE + '\n')
         else:
             pass
 
@@ -181,8 +197,10 @@ def get_targets():
     show_closed()
     if ',' in targets:
         for ip_add in targets.split(','):
+            scan_results['targets'].append(ip_add.strip(' '))
             scan(ip_add.strip(' '))
     else:
+        scan_results['targets'].append(targets)
         scan(targets)
 
 
@@ -213,12 +231,41 @@ def do_exit():
     if exit_or == 'y' or exit_or == ' ':
         get_targets()
     else:
-        print(Fore.LIGHTBLUE_EX + f'[*] LameScan {VERSION_N} has been lamely terminated.' + '\n')
-        print(Fore.RED + '[------------------{*| Noli umquam discere desinere |*}------------------]' + Fore.WHITE)
+        print_scan_results()
+        save_to_json()
 
 
+#  handles printing the summary of the scan results.
+def print_scan_results():
+    print('\n' + Fore.RED + '[-------------------{*| lameScan Results Summary  |*}--------------------]' + Fore.WHITE
+          + '\n')
+    print(Fore.GREEN + f'[Results] Target(s) scanned: {scan_results["targets"]}')
+    print(f'[Results] Scan Started at: {scan_results["scan_start"]}')
+    print(f'[Results] Scan Completed at: {scan_results["scan_end"]}')
+    print(f'[Results] Scan Completed in: {round(t_end - t_start, 2)} seconds.')
+    print(f'[Results] Total Open ports found: {len(scan_results["open_ports_found"])} ')
+    print(f'[Results] Number of Open ports detected: {scan_results["open_ports_found"]} ')
+    print(f'[Results] Open ports w/ Banners detected: {scan_results["ports_with_banner"]} ')
+    print('\n' + Fore.RED + '[------------------{*| Noli umquam discere desinere |*}------------------]' + Fore.WHITE
+          + '\n')
+    print('\n' + Fore.LIGHTBLUE_EX + f'[X] LameScan {VERSION_N} has been lamely terminated. Thanks for using it!'
+          + '\n')
+
+
+# handles saving the scan results to a JSON file
+def save_to_json():
+    raw_date = str(scan_results['scan_end'])
+    date = re.sub('[,: ]', '', raw_date)
+    file_name = f'lameScan_results_{date}.json'
+    f = open(file_name, 'w')
+    f.write(json.dumps(scan_results, indent=1))
+
+
+#  Main code flow
 print_welcome()
+scan_results['scan_start'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
 t_start = time.perf_counter()
 get_targets()
 t_end = time.perf_counter()
+scan_results['scan_end'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
 do_exit()

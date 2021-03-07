@@ -9,16 +9,20 @@ of what I lean into creating this basic example of a port scanner.
 
 - Supports Multi-threaded scans for better performance and quick results
 - Scans all ports by default unless a range is specified.
-  - Right now if no range is entered, it scans all 65535 ports.
+  - Right now if no range is entered, will scan the `top 1000` ports.
 - Supports domain names and IPs by default.
-- Attempts to grab the banner of the port and prints the result  
+- Attempts to grab the banner of the port and prints the result
+- Scan results are automatically saved into a JSON formatted file (super basic for now)  
 - Supports multiple targets separated by commas: 
-    - Example: **facebook.com,192.168.1.1,google.com,127.0.0.1**
+    - **Example:** `facebook.com,192.168.1.1,google.com,127.0.0.1`
   
 ## Future Enhancements
-- Add the scan option to have the top 1000 TCP ports scanned
-- add support to specify ports specific ports instead of range only.
-- Add support to have results collected and saved to a file
+
+- Edd support to specify ports specific ports instead of range only.
+- Enhance banner detection.
+- Enhance JSON export (possibly include other formats).
+- Fix the bugs!
+
 
 
 > **NOTE**: Like I mentioned I'm just going through python3 learning process, so don't expect this to become

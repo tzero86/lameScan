@@ -1,7 +1,10 @@
 import socket
 from IPy import IP
 from pyfiglet import Figlet
-from colorama import Fore, Back, Style
+from colorama import Fore
+import concurrent.futures
+import functools
+import time
 
 # General scan settings
 scan_config = {
@@ -14,7 +17,7 @@ scan_config = {
 }
 
 # to be cleaned, some global values
-VERSION_N = 'v0.0.1'
+VERSION_N = 'v0.0.2'
 TOP1kPORTS_TCP = '1,3,4,6,7,9,13,17,19,20,21,22,23,24,25,26,30,32,33,37,42,43,49,53,70,' \
                  '79,80,81,82,83,84,85,88,89,90,99,100,106,109,110,111,113,119,125,135,139' \
                  ',143,144,146,161,163,179,199,211,212,222,254,255,256,259,264,280,301,306,' \
@@ -107,15 +110,20 @@ def show_closed():
         pass
 
 
-# reads and launches a scan for each port in range.
+# reads and launches a scan for each port in range in multi-threaded mode.
 def scan(target):
+    ports = []
     converted_ip = check_ip(target)
     l_port = int(scan_config['range']['low_port'])
     h_port = int(scan_config['range']['high_port'])
     print(Fore.LIGHTBLUE_EX + f'[*] Scanning for open ports on the target: {target}')
     print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {l_port}-{h_port - 1}')  # second lamest fix of my life.
+
     for port in range(l_port, h_port):
-        scan_port(converted_ip, port)
+        ports.append(port)
+    partial_res = functools.partial(scan_port, converted_ip)
+    with concurrent.futures.ThreadPoolExecutor() as threaded_scans:
+        res = list(threaded_scans.map(partial_res, ports))
 
 
 # gets the banner, or tries to.
@@ -134,6 +142,7 @@ def check_ip(ip):
 
 # scans the individual port as per the global settings
 def scan_port(r_ip, r_port):
+    # print(Fore.CYAN + f'[DEBUG] Starting thread scan with Host: {r_ip} and port {r_port}' + Fore.WHITE + '\n')
     try:
         sock = socket.socket()
         sock.settimeout(scan_config['timeout'])
@@ -187,7 +196,7 @@ def get_range():
 
 # handles the end of scan options, asks the user to perform another scan or exit.
 def do_exit():
-    print(Fore.LIGHTRED_EX + f'[*] The scan has been completed.')
+    print(Fore.LIGHTRED_EX + f'[*] The scan has been completed in {round(t_end-t_start, 2)} seconds.')
     exit_or = input(Fore.LIGHTBLUE_EX + '[?] Do you want to perform another scan (y/n)?:  ')
     if exit_or == 'y':
         get_targets()
@@ -197,5 +206,8 @@ def do_exit():
 
 
 print_welcome()
+t_start = time.perf_counter()
 get_targets()
+t_end = time.perf_counter()
 do_exit()
+

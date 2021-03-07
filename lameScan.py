@@ -3,15 +3,17 @@ from IPy import IP
 from pyfiglet import Figlet
 from colorama import Fore, Back, Style
 
+# General scan settings
 scan_config = {
     'range': {
         'low_port': 0,
         'high_port': 65535
     },
-    'timeout': 0.2,
+    'timeout': 0.4,
     'show_closed_ports': False
 }
 
+# to be cleaned, some global values
 VERSION_N = 'v0.0.1'
 TOP1kPORTS_TCP = '1,3,4,6,7,9,13,17,19,20,21,22,23,24,25,26,30,32,33,37,42,43,49,53,70,' \
                  '79,80,81,82,83,84,85,88,89,90,99,100,106,109,110,111,113,119,125,135,139' \
@@ -86,6 +88,7 @@ TOP1kPORTS_TCP = '1,3,4,6,7,9,13,17,19,20,21,22,23,24,25,26,30,32,33,37,42,43,49
                  ',60020,60443,61532,61900,62078,63331,64623,64680,65000,65129,65389'
 
 
+# handles the welcome message printing
 def print_welcome():
     custom_fig = Figlet(font='nancyj')
     print('\n' + '\n' + Fore.GREEN + custom_fig.renderText('LameScan'))
@@ -94,6 +97,7 @@ def print_welcome():
         + Fore.WHITE + '\n')
 
 
+# handles the option to show/hide the closed ports in the results.
 def show_closed():
     flag = targets = input(Fore.LIGHTBLUE_EX + '[?] Do you want to see closed ports in the results (y/n) (Hidden by '
                                                'def)?: ')
@@ -103,20 +107,23 @@ def show_closed():
         pass
 
 
+# reads and launches a scan for each port in range.
 def scan(target):
     converted_ip = check_ip(target)
     l_port = int(scan_config['range']['low_port'])
     h_port = int(scan_config['range']['high_port'])
     print(Fore.LIGHTBLUE_EX + f'[*] Scanning for open ports on the target: {target}')
-    print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {l_port}-{h_port-1}')  # second lamest fix of my life.
+    print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {l_port}-{h_port - 1}')  # second lamest fix of my life.
     for port in range(l_port, h_port):
         scan_port(converted_ip, port)
 
 
+# gets the banner, or tries to.
 def get_banner(s):
-    return s.recv(1024)
+    return s.recv(2048)
 
 
+# checks if the user entered an IP or a domain name and sanitizes it for scanning.
 def check_ip(ip):
     try:
         IP(ip)
@@ -125,11 +132,16 @@ def check_ip(ip):
         return socket.gethostbyname(ip)
 
 
+# scans the individual port as per the global settings
 def scan_port(r_ip, r_port):
     try:
         sock = socket.socket()
         sock.settimeout(scan_config['timeout'])
         sock.connect((r_ip, r_port))
+        if r_port == 80:
+            sock.send(b'GET /\n\n')
+        else:
+            pass
         try:
             banner = get_banner(sock)
             banner = banner.decode().strip("\n")
@@ -143,6 +155,7 @@ def scan_port(r_ip, r_port):
             pass
 
 
+# reads the list of targets to be scanned.
 def get_targets():
     targets = input(Fore.LIGHTBLUE_EX + '[?] Enter the target(s) to scan (e.g test.com,domain.com,ip): ')
     get_range()
@@ -154,11 +167,13 @@ def get_targets():
         scan(targets)
 
 
+# sets the scan port range as per the user input received.
 def set_range(l_port, h_port):
     scan_config['range']['low_port'] = int(l_port)
     scan_config['range']['high_port'] = int(h_port) + 1  # lamest fix of my life, not proud
 
 
+# gets the range of ports from the user
 def get_range():
     ports_range = input(Fore.LIGHTBLUE_EX + '[?] Enter port range (e.g 1-65535) or press ENTER to scan top 1000 TCP '
                                             'ports: ')
@@ -170,6 +185,7 @@ def get_range():
         pass
 
 
+# handles the end of scan options, asks the user to perform another scan or exit.
 def do_exit():
     print(Fore.LIGHTRED_EX + f'[*] The scan has been completed.')
     exit_or = input(Fore.LIGHTBLUE_EX + '[?] Do you want to perform another scan (y/n)?:  ')

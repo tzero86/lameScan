@@ -90,11 +90,13 @@ def print_welcome():
     custom_fig = Figlet(font='nancyj')
     print('\n' + '\n' + Fore.GREEN + custom_fig.renderText('LameScan'))
     print(
-        Fore.RED + f'[----  {VERSION_N} Another <<Im learning python>> port scanner by @Tzero86' + '  ----]' + Fore.WHITE + '\n')
+        Fore.RED + f'[----  {VERSION_N} Another <<Im learning python>> port scanner by @Tzero86' + '  ----]'
+        + Fore.WHITE + '\n')
 
 
 def show_closed():
-    flag = targets = input(Fore.LIGHTBLUE_EX + '[?] Do you want to see closed ports in the results (y/n) (Hidden by def)?: ')
+    flag = targets = input(Fore.LIGHTBLUE_EX + '[?] Do you want to see closed ports in the results (y/n) (Hidden by '
+                                               'def)?: ')
     if flag == 'y':
         scan_config['show_closed_ports'] = True
     else:
@@ -106,7 +108,7 @@ def scan(target):
     l_port = int(scan_config['range']['low_port'])
     h_port = int(scan_config['range']['high_port'])
     print(Fore.LIGHTBLUE_EX + f'[*] Scanning for open ports on the target: {target}')
-    print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {l_port}-{h_port}')
+    print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {l_port}-{h_port-1}')  # second lamest fix of my life.
     for port in range(l_port, h_port):
         scan_port(converted_ip, port)
 

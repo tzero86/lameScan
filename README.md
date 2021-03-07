@@ -1,4 +1,4 @@
-# LameScan - a very lame port scanner made with python3
+# LameScan - a very lame port scanner made with Python3
 
 I've decided to start playing with Python3 again, and been putting a bits and pieces 
 of what I lean into creating this basic example of a port scanner.
@@ -11,8 +11,10 @@ of what I lean into creating this basic example of a port scanner.
 - Attempts to grab the banner of the port and print the result  
 - User can specify multiple targets separated by commas: 
     - Example: **facebook.com,192.168.1.1,google.com,127.0.0.1**
-    
-> **NOTE**: Like I mentioned I'm just going through python3 learning process, so don't expect this to become
-a useful tool any time soon.
+  
+![](https://i.imgur.com/tBFae3s.gif)
 
-@tzero86
+> **NOTE**: Like I mentioned I'm just going through python3 learning process, so don't expect this to become
+a useful tool any time soon or even ever. This is just a 'have fun and learn some Python3' kind of thing. 
+
+

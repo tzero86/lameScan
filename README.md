@@ -5,7 +5,8 @@ of what I lean into creating this basic example of a port scanner.
 
 ## Features
 
-- (Will) Scan TOP 1000 ports by default unless a range is specified.
+- (To do) Scan TOP 1000 ports by default unless a range is specified.
+  - Right now if no range is entered, it scans all 65535 ports.
 - Supports domain names and IPs by default.
 - Attempts to grab the banner of the port and print the result  
 - User can specify multiple targets separated by commas: 

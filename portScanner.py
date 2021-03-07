@@ -5,10 +5,11 @@ from colorama import Fore, Back, Style
 
 scan_config = {
     'range': {
-        'low_port': 1,
+        'low_port': 0,
         'high_port': 65535
     },
-    'timeout': 0.2
+    'timeout': 0.2,
+    'show_closed_ports': False
 }
 
 VERSION_N = 'v0.0.1'
@@ -87,9 +88,17 @@ TOP1kPORTS_TCP = '1,3,4,6,7,9,13,17,19,20,21,22,23,24,25,26,30,32,33,37,42,43,49
 
 def print_welcome():
     custom_fig = Figlet(font='nancyj')
-    print(Fore.GREEN + custom_fig.renderText('LameScan'))
-    print(Fore.RED + f'{VERSION_N} A basic <<Im learning python>> port scanner by @Tzero86')
-    print(Fore.GREEN + '------------------------------------------------------------------' + Fore.WHITE)
+    print('\n' + '\n' + Fore.GREEN + custom_fig.renderText('LameScan'))
+    print(
+        Fore.RED + f'[----  {VERSION_N} Another <<Im learning python>> port scanner by @Tzero86' + '  ----]' + Fore.WHITE + '\n')
+
+
+def show_closed():
+    flag = targets = input(Fore.LIGHTBLUE_EX + '[?] Do you want to see closed ports in the results (y/n) (Hidden by def)?: ')
+    if flag == 'y':
+        scan_config['show_closed_ports'] = True
+    else:
+        pass
 
 
 def scan(target):
@@ -126,13 +135,16 @@ def scan_port(r_ip, r_port):
         except:
             print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port}' + Fore.WHITE)
     except:
-        # print(f'[-] Host: {r_ip} -> Port {r_port} is closed')
-        pass
+        if scan_config['show_closed_ports']:
+            print(Fore.LIGHTYELLOW_EX + f'[-] Host: {r_ip} -> Port {r_port} is closed' + Fore.WHITE)
+        else:
+            pass
 
 
 def get_targets():
-    targets = input(Fore.LIGHTBLUE_EX + '[?] Enter the target(s) to scan (e.g test.com,domain.com,ip : ')
+    targets = input(Fore.LIGHTBLUE_EX + '[?] Enter the target(s) to scan (e.g test.com,domain.com,ip): ')
     get_range()
+    show_closed()
     if ',' in targets:
         for ip_add in targets.split(','):
             scan(ip_add.strip(' '))
@@ -140,14 +152,14 @@ def get_targets():
         scan(targets)
 
 
-def set_range(lport, hport):
-    scan_config['range']['low_port'] = lport
-    scan_config['range']['high_port'] = hport
+def set_range(l_port, h_port):
+    scan_config['range']['low_port'] = int(l_port)
+    scan_config['range']['high_port'] = int(h_port) + 1  # lamest fix of my life, not proud
 
 
 def get_range():
-    ports_range = input(Fore.LIGHTBLUE_EX + '[?] Enter de desired range (e.g 1-65535) otherwise press ENTER and it '
-                                            'will default to top 1000 ports: ')
+    ports_range = input(Fore.LIGHTBLUE_EX + '[?] Enter port range (e.g 1-65535) or press ENTER to scan top 1000 TCP '
+                                            'ports: ')
     if '-' in ports_range:
         ports = ports_range.split('-')
         set_range(ports[0], ports[1])
@@ -163,10 +175,9 @@ def do_exit():
         get_targets()
     else:
         print(Fore.LIGHTBLUE_EX + f'[*] LameScan {VERSION_N} has been lamely terminated.')
+        print(Fore.RED + f'[----  Noli umquam discere desinere   ----]' + Fore.WHITE)
 
 
 print_welcome()
 get_targets()
 do_exit()
-
-

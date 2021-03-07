@@ -107,8 +107,8 @@ def print_welcome():
 
 # handles the option to show/hide the closed ports in the results.
 def show_closed():
-    flag = targets = input(Fore.LIGHTBLUE_EX + '[?] Do you want to see closed ports in the results (y/n) (Hidden by '
-                                               'def)?: ')
+    flag = targets = input(Fore.LIGHTBLUE_EX + f'[?] Do you want to see closed ports in the results {Fore.MAGENTA}'
+                                               f'(y/n) (Hidden by default){Fore.LIGHTBLUE_EX}?: ')
     if flag == 'y':
         scan_config['show_closed_ports'] = True
     else:
@@ -119,9 +119,9 @@ def show_closed():
 def scan(target):
     ports = []
     converted_ip = check_ip(target)
-    print(Fore.LIGHTBLUE_EX + f'[*] Scanning for open ports on the target: {target}')
+    print(Fore.LIGHTBLUE_EX + f'[*] Scanning for open ports on the target:{Fore.MAGENTA} {target} {Fore.LIGHTBLUE_EX}')
     if scan_config['run_top1k_ports']:
-        print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: TOP 1000 Ports.')
+        print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {Fore.MAGENTA}TOP 1000 Ports.{Fore.LIGHTBLUE_EX}')
         ports = TOP1kPORTS_TCP
     else:
         l_port = int(scan_config['range']['low_port'])
@@ -175,7 +175,8 @@ def scan_port(r_ip, r_port):
 
 # reads the list of targets to be scanned.
 def get_targets():
-    targets = input(Fore.LIGHTBLUE_EX + '[?] Enter the target(s) to scan (e.g test.com,domain.com,ip): ')
+    targets = input(Fore.LIGHTBLUE_EX + f'[?] Enter the target(s) to scan {Fore.MAGENTA}(e.g: test.com,domain.com,ip)'
+                                        f'{Fore.LIGHTBLUE_EX}: ')
     get_range()
     show_closed()
     if ',' in targets:
@@ -193,8 +194,8 @@ def set_range(l_port, h_port):
 
 # gets the range of ports from the user
 def get_range():
-    ports_range = input(Fore.LIGHTBLUE_EX + '[?] Enter port range (e.g 1-65535) or press ENTER to scan top 1000 TCP '
-                                            'ports: ')
+    ports_range = input(Fore.LIGHTBLUE_EX + f'[?] Enter port range {Fore.MAGENTA}(e.g 1-65535){Fore.LIGHTBLUE_EX} or '
+                                            f'press{Fore.MAGENTA} ENTER to scan TOP 1000{Fore.LIGHTBLUE_EX} ports: ')
     if '-' in ports_range:
         ports = ports_range.split('-')
         set_range(ports[0], ports[1])
@@ -207,12 +208,13 @@ def get_range():
 # handles the end of scan options, asks the user to perform another scan or exit.
 def do_exit():
     print(Fore.LIGHTRED_EX + f'[*] The scan has been completed in {round(t_end - t_start, 2)} seconds.')
-    exit_or = input(Fore.LIGHTBLUE_EX + '[?] Do you want to perform another scan (y/n)?:  ')
+    exit_or = input(Fore.LIGHTBLUE_EX + f'[?] Do you want to perform another scan{Fore.MAGENTA}(y/n){Fore.LIGHTBLUE_EX}'
+                                        f'?:  ')
     if exit_or == 'y' or exit_or == ' ':
         get_targets()
     else:
-        print(Fore.LIGHTBLUE_EX + f'[*] LameScan {VERSION_N} has been lamely terminated.')
-        print(Fore.RED + f'[----  Noli umquam discere desinere   ----]' + Fore.WHITE)
+        print(Fore.LIGHTBLUE_EX + f'[*] LameScan {VERSION_N} has been lamely terminated.' + '\n')
+        print(Fore.RED + '[------------------{*| Noli umquam discere desinere |*}------------------]' + Fore.WHITE)
 
 
 print_welcome()

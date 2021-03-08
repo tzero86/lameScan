@@ -11,7 +11,7 @@ import re
 # General settings
 lameScan_config = {
     'debug': False,
-    'max_thread_workers': 20
+    'max_thread_workers': 60
 }
 
 # General scan specific settings
@@ -180,7 +180,7 @@ def scan_port(r_ip, r_port):
             scan_results['open_ports_found'].append(r_port)
             scan_results['ports_with_banner'].append(f'{r_port}: {banner}')
         except:
-            print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port}' + Fore.WHITE)
+            print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port}' + Fore.WHITE + '\n')
             scan_results['open_ports_found'].append(r_port)
     except:
         if scan_config['show_closed_ports']:

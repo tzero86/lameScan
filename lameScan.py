@@ -176,7 +176,7 @@ def scan_port(r_ip, r_port):
         try:
             banner = get_banner(sock)
             banner = banner.decode().strip("\n")
-            print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port} - Banner: {banner}' + Fore.WHITE)
+            print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port} - Banner: {banner}' + Fore.WHITE + '\n')
             scan_results['open_ports_found'].append(r_port)
             scan_results['ports_with_banner'].append(f'{r_port}: {banner}')
         except:

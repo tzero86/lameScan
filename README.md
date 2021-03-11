@@ -1,4 +1,4 @@
-# LameScan - v0.0.2 Experimental
+# LameScan - Module v0.0.1 [Experimental]
 
 This branch is for development of the refactored version of lameScan, which will really be a module of 
 another app I'll be working on. The idea is to have a tool-kit-like type of app that will do port scanning,

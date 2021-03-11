@@ -107,6 +107,11 @@ TOP1kPORTS_TCP = [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 
                   50003, 50006, 50300, 50389, 50500, 50636, 50800, 51103, 51493, 52673, 52822, 52848,
                   52869, 54045, 54328, 55055, 55056, 55555, 55600, 56737, 56738, 57294, 57797, 58080,
                   60020, 60443, 61532, 61900, 62078, 63331, 64623, 64680, 65000, 65129, 65389]
+t_start, t_end = 0, 0
+
+
+def get_scan_results():
+    return scan_results
 
 
 # handles the welcome message printing
@@ -120,7 +125,7 @@ def print_welcome():
 
 # handles the option to show/hide the closed ports in the results.
 def show_closed():
-    flag = targets = input(Fore.LIGHTBLUE_EX + f'[?] Do you want to see closed ports in the results {Fore.MAGENTA}'
+    flag = input(Fore.LIGHTBLUE_EX + f'[?] Do you want to see closed ports in the results {Fore.MAGENTA}'
                                                f'(y/n) (Hidden by default){Fore.LIGHTBLUE_EX}?: ')
     if flag == 'y':
         scan_config['show_closed_ports'] = True
@@ -175,7 +180,7 @@ def scan_port(r_ip, r_port):
             pass
         try:
             banner = get_banner(sock)
-            banner = banner.decode().strip("\n")
+            banner = banner.decode().strip("\n").strip('\r')
             print(Fore.GREEN + f'[+] Host: {r_ip} - Port open: {r_port} - Banner: {banner}' + Fore.WHITE + '\n')
             scan_results['open_ports_found'].append(r_port)
             scan_results['ports_with_banner'].append(f'{r_port}: {banner}')
@@ -237,7 +242,7 @@ def do_exit():
 
 #  handles printing the summary of the scan results.
 def print_scan_results():
-    print('\n' + Fore.RED + '[-------------------{*| lameScan Results Summary  |*}--------------------]' + Fore.WHITE
+    print('\n' + Fore.RED + '[-------------------{*| lameScan Results Summary |*}--------------------]' + Fore.WHITE
           + '\n')
     print(Fore.GREEN + f'[Results] Target(s) scanned: {scan_results["targets"]}')
     print(f'[Results] Scan Started at: {scan_results["scan_start"]}')
@@ -261,11 +266,16 @@ def save_to_json():
     f.write(json.dumps(scan_results, indent=1))
 
 
+def new_run():
+    print_welcome()
+    scan_results['scan_start'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
+    t_start = time.perf_counter()
+    get_targets()
+    t_end = time.perf_counter()
+    scan_results['scan_end'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
+    do_exit()
+
+
 #  Main code flow
-print_welcome()
-scan_results['scan_start'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
-t_start = time.perf_counter()
-get_targets()
-t_end = time.perf_counter()
-scan_results['scan_end'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
-do_exit()
+if __name__ == '__main__':
+    new_run()

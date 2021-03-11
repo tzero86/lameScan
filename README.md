@@ -1,5 +1,15 @@
-# LameScan - v0.0.2 
-### A very lame & simple port scanner(attempt) made with Python3
+# LameScan - v0.0.2 Experimental
+
+This branch is for development of the refactored version of lameScan, which will really be a module of 
+another app I'll be working on. The idea is to have a tool-kit-like type of app that will do port scanning,
+Vulnerability finder, ARP spoofing, etc.
+
+Right now this is just an idea, I might or not be put into practice and developed. The main branch contains the 
+stand-alone version of the lameScanner which can be used until this future idea has its basic functionalities working.
+
+> **WARNING**: Documentation beyond this point is old and does not reflect the current changes of this branch. 
+> Yet another thing to update at some point.
+
 
 ![](https://i.imgur.com/5IdZKc8.png)
 

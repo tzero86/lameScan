@@ -1,5 +1,6 @@
 import socket
 from IPy import IP
+from clear_screen import clear
 from pyfiglet import Figlet
 from colorama import Fore
 import concurrent.futures
@@ -84,11 +85,18 @@ class LameScan:
                       52869, 54045, 54328, 55055, 55056, 55555, 55600, 56737, 56738, 57294, 57797, 58080,
                       60020, 60443, 61532, 61900, 62078, 63331, 64623, 64680, 65000, 65129, 65389]
     t_start, t_end = 0, 0
+    RED = Fore.RED
+    GREEN = Fore.GREEN
+    WHITE = Fore.WHITE
+    LBLUE = Fore.LIGHTBLUE_EX
+    MAGENTA = Fore.MAGENTA
+    YELLOW = Fore.LIGHTYELLOW_EX
+    CYAN = Fore.CYAN
 
     # General settings
     lameScan_config = {
         'debug': False,
-        'max_thread_workers': 60
+        'max_thread_workers': 60,
     }
 
     # General scan specific settings
@@ -120,15 +128,15 @@ class LameScan:
     # handles the welcome message printing
     def print_welcome(self):
         custom_fig = Figlet(font='nancyj')
-        print('\n' + '\n' + Fore.GREEN + custom_fig.renderText('LameScan'))
+        print('\n' + '\n' + self.GREEN + custom_fig.renderText('LameScan'))
         print(
-            Fore.RED + f'[----  {self.VERSION_N} Another <<Im learning python>> port scanner by @Tzero86' + '  ----]'
-            + Fore.WHITE + '\n')
+            self.RED + f'[----  {self.VERSION_N} Another <<Im learning python>> port scanner by @Tzero86' + '  ----]'
+            + self.WHITE + '\n')
 
     # handles the option to show/hide the closed ports in the results.
     def show_closed(self):
-        flag = input(Fore.LIGHTBLUE_EX + f'[?] Do you want to see closed ports in the results {Fore.MAGENTA}'
-                                         f'(y/n) (Hidden by default){Fore.LIGHTBLUE_EX}?: ')
+        flag = input(self.LBLUE + f'[?] Do you want to see closed ports in the results {self.MAGENTA}'
+                                  f'(y/n) (Hidden by default){self.LBLUE}?: ')
         if flag == 'y':
             self.scan_config['show_closed_ports'] = True
         else:
@@ -139,21 +147,21 @@ class LameScan:
         ports = []
         converted_ip = self.check_ip(target)
         print(
-            Fore.LIGHTBLUE_EX + f'[*] Scanning for open ports on the target:{Fore.MAGENTA} '
-                                f'{target} {Fore.LIGHTBLUE_EX}')
+            self.LBLUE + f'[*] Scanning for open ports on the target:{self.MAGENTA} '
+                         f'{target} {self.LBLUE}')
         if self.scan_config['run_top1k_ports']:
-            print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {Fore.MAGENTA}TOP 1000 Ports.{Fore.LIGHTBLUE_EX}')
+            print(self.LBLUE + f'[*] Range of Scan: {self.MAGENTA}TOP 1000 Ports.{self.LBLUE}')
             ports = self.TOP1kPORTS_TCP
         else:
             l_port = int(self.scan_config['range']['low_port'])
             h_port = int(self.scan_config['range']['high_port'])
-            print(Fore.LIGHTBLUE_EX + f'[*] Range of Scan: {l_port}-{h_port - 1}')  # second lamest fix of my life.
+            print(self.LBLUE + f'[*] Range of Scan: {l_port}-{h_port - 1}')  # second lamest fix of my life.
             for port in range(l_port, h_port):
                 ports.append(port)
         partial_res = functools.partial(self.scan_port, converted_ip)
         with concurrent.futures.ThreadPoolExecutor(
                 max_workers=self.lameScan_config['max_thread_workers']) as threaded_scans:
-                list(threaded_scans.map(partial_res, ports))
+            list(threaded_scans.map(partial_res, ports))
 
     # checks if the user entered an IP or a domain name and sanitizes it for scanning.
     def check_ip(self, target):
@@ -166,7 +174,7 @@ class LameScan:
     # scans the individual port as per the global settings
     def scan_port(self, target, port):
         if self.lameScan_config['debug']:
-            print(Fore.CYAN + f'[DEBUG] Starting thread scan with Host: {target} and port {port}' + Fore.WHITE + '\n')
+            print(self.CYAN + f'[DEBUG] Starting thread scan with Host: {target} and port {port}' + self.WHITE + '\n')
         try:
             sock = socket.socket()
             sock.settimeout(self.scan_config['timeout'])
@@ -177,23 +185,23 @@ class LameScan:
                 pass
             try:
                 banner = sock.recv(2048).decode().strip("\n").strip('\r')
-                print(Fore.GREEN + f'[+] Host: {target} - Port open: {port} - Banner: {banner}' + Fore.WHITE + '\n')
+                print(self.GREEN + f'[+] Host: {target} - Port open: {port} - Banner: {banner}' + self.WHITE + '\n')
                 self.scan_results['open_ports_found'].append(port)
                 self.scan_results['ports_with_banner'].append(f'{port}: {banner}')
             except:
-                print(Fore.GREEN + f'[+] Host: {target} - Port open: {port}' + Fore.WHITE + '\n')
+                print(self.GREEN + f'[+] Host: {target} - Port open: {port}' + self.WHITE + '\n')
                 self.scan_results['open_ports_found'].append(port)
         except:
             if self.scan_config['show_closed_ports']:
-                print('\n' + Fore.LIGHTYELLOW_EX + f'[-] Host: {target} -> Port {port} is closed' + Fore.WHITE + '\n')
+                print('\n' + self.YELLOW + f'[-] Host: {target} -> Port {port} is closed' + self.WHITE + '\n')
             else:
                 pass
 
     # reads the list of targets to be scanned.
     def get_targets(self):
         targets = input(
-            Fore.LIGHTBLUE_EX + f'[?] Enter the target(s) to scan {Fore.MAGENTA}(e.g: test.com,domain.com,ip)'
-                                f'{Fore.LIGHTBLUE_EX}: ')
+            self.LBLUE + f'[?] Enter the target(s) to scan {self.MAGENTA}(e.g: test.com,domain.com,ip)'
+                         f'{self.LBLUE}: ')
         self.get_range()
         self.show_closed()
         if ',' in targets:
@@ -207,8 +215,8 @@ class LameScan:
     # gets the range of ports from the user
     def get_range(self):
         ports_range = input(
-            Fore.LIGHTBLUE_EX + f'[?] Enter port range {Fore.MAGENTA}(e.g 1-65535){Fore.LIGHTBLUE_EX} or '
-                                f'press{Fore.MAGENTA} ENTER to scan TOP 1000{Fore.LIGHTBLUE_EX} ports: ')
+            self.LBLUE + f'[?] Enter port range {self.MAGENTA}(e.g 1-65535){self.LBLUE} or '
+                         f'press{self.MAGENTA} ENTER to scan TOP 1000{self.LBLUE} ports: ')
         if '-' in ports_range:
             ports = ports_range.split('-')
             self.scan_config['range']['low_port'] = int(ports[0])
@@ -220,21 +228,23 @@ class LameScan:
 
     # handles the end of scan options, asks the user to perform another scan or exit.
     def do_exit(self):
-        print(Fore.LIGHTRED_EX + f'[*] The scan has been completed in {round(self.t_end - self.t_start, 2)} seconds.')
+        print(self.RED + f'[*] The scan has been completed in {round(self.t_end - self.t_start, 2)} seconds.')
         exit_or = input(
-            Fore.LIGHTBLUE_EX + f'[?] Do you want to perform another scan{Fore.MAGENTA}(y/n){Fore.LIGHTBLUE_EX}'
-                                f'?:  ')
+            self.LBLUE + f'[?] Do you want to perform another scan{self.MAGENTA}(y/n){self.LBLUE}'
+                         f'?:  ')
         if exit_or == 'y' or exit_or == ' ':
-            self.get_targets()
+            # self.get_targets()
+            self.new_run()
+
         else:
             self.print_scan_results()
             self.save_to_json()
 
     #  handles printing the summary of the scan results.
     def print_scan_results(self):
-        print('\n' + Fore.RED + '[-------------------{*| lameScan Results Summary |*}--------------------]' + Fore.WHITE
+        print('\n' + self.RED + '[-------------------{*| lameScan Results Summary |*}--------------------]' + self.WHITE
               + '\n')
-        print(Fore.GREEN + f'[Results] Target(s) scanned: {self.scan_results["targets"]}')
+        print(self.GREEN + f'[Results] Target(s) scanned: {self.scan_results["targets"]}')
         print(f'[Results] Scan Started at: {self.scan_results["scan_start"]}')
         print(f'[Results] Scan Completed at: {self.scan_results["scan_end"]}')
         print(f'[Results] Scan Completed in: {round(self.t_end - self.t_start, 2)} seconds.')
@@ -242,10 +252,10 @@ class LameScan:
         print(f'[Results] Number of Open ports detected: {self.scan_results["open_ports_found"]} ')
         print(f'[Results] Open ports w/ Banners detected: {self.scan_results["ports_with_banner"]} ')
         print(
-            '\n' + Fore.RED + '[------------------{*| Noli umquam discere desinere |*}------------------]' + Fore.WHITE
+            '\n' + self.RED + '[------------------{*| Noli umquam discere desinere |*}------------------]' + self.WHITE
             + '\n')
         print(
-            '\n' + Fore.LIGHTBLUE_EX + f'[X] LameScan {self.VERSION_N} has been lamely terminated. Thanks for using it!'
+            '\n' + self.LBLUE + f'[X] LameScan {self.VERSION_N} has been lamely terminated. Thanks for using it!'
             + '\n')
 
     # handles saving the scan results to a JSON file
@@ -257,6 +267,7 @@ class LameScan:
         f.write(json.dumps(self.scan_results, indent=1))
 
     def new_run(self):
+        clear()
         self.print_welcome()
         self.scan_results['scan_start'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
         self.t_start = time.perf_counter()

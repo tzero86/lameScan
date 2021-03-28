@@ -12,7 +12,7 @@ import re
 
 class LameScan:
     # to be cleaned, some global values
-    VERSION_N = 'Module v0.0.1'
+    VERSION_N = 'v0.0.1'
     TOP1kPORTS_TCP = [1, 3, 4, 6, 7, 9, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32, 33, 37, 42, 43, 49, 53, 70,
                       79, 80, 81, 82, 83, 84, 85, 88, 89, 90, 99, 100, 106, 109, 110, 111, 113, 119, 125, 135, 139,
                       143, 144, 146, 161, 163, 179, 199, 211, 212, 222, 254, 255, 256, 259, 264, 280, 301, 306,
@@ -130,7 +130,7 @@ class LameScan:
         custom_fig = Figlet(font='nancyj')
         print('\n' + '\n' + self.GREEN + custom_fig.renderText('LameScan'))
         print(
-            self.RED + f'[----  {self.VERSION_N} Another <<Im learning python>> port scanner by @Tzero86' + '  ----]'
+            self.RED + f'[----  {self.VERSION_N} Another <<Im just learning python>> port & vuln scanner. @Tzero86' + '  ----]'
             + self.WHITE + '\n')
 
     # handles the option to show/hide the closed ports in the results.
@@ -228,6 +228,7 @@ class LameScan:
 
     # handles the end of scan options, asks the user to perform another scan or exit.
     def do_exit(self):
+
         print(self.RED + f'[*] The scan has been completed in {round(self.t_end - self.t_start, 2)} seconds.')
         exit_or = input(
             self.LBLUE + f'[?] Do you want to perform another scan{self.MAGENTA}(y/n){self.LBLUE}'
@@ -239,6 +240,8 @@ class LameScan:
         else:
             self.print_scan_results()
             self.save_to_json()
+        import menu
+        menu.ConfigMenu().print_options()
 
     #  handles printing the summary of the scan results.
     def print_scan_results(self):
@@ -267,8 +270,7 @@ class LameScan:
         f.write(json.dumps(self.scan_results, indent=1))
 
     def new_run(self):
-        clear()
-        self.print_welcome()
+        # clear()
         self.scan_results['scan_start'] = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
         self.t_start = time.perf_counter()
         self.get_targets()

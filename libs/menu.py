@@ -1,8 +1,10 @@
-import lameScanner
+from libs import lameScanner
+from libs import vulnScan
 
 
 class ConfigMenu:
     lame = lameScanner.LameScan()
+    vuln = vulnScan.vuln_scanner()
 
     # General settings
     VERSION = {
@@ -34,13 +36,11 @@ class ConfigMenu:
     def callPortScanner(self):
         self.lame.new_run()
 
-    def callVulnScanner(self):
-        print(f'[SOON] This feature will be added soon. Stay Tuned!')
-
     def do_exit(self):
         print(f'By bye :)')
         print(
-            '\n' + self.lame.RED + '[------------------------{*| Noli umquam discere desinere |*}------------------------]' + self.lame.WHITE
+            '\n' + self.lame.RED + '[------------------------{*| Noli umquam discere desinere |*}------------------'
+                                   '------]' + self.lame.WHITE
             + '\n')
 
         quit()
@@ -52,9 +52,8 @@ class ConfigMenu:
                 f'|---------------------------------------(:MENU:)-------------------------------------|' + '\n'
                 + '\n'
                   f'{self.lame.CYAN}Please select a module to execute:{self.lame.LBLUE}' + '\n' + '\n'
-                                                                                                  f'[01] Multi-threaded Port Scanner' + '\n'
-                                                                                                                                        f'[02] Vulnerability Scanner' + '\n'
-                                                                                                                                                                        f'[99] Exit LameSacan' + f'\n{self.lame.CYAN}'
+                  f'[01] Multi-threaded Port Scanner' + '\n'
+                  f'[02] Vulnerability Scanner' + '\n'f'[99] Exit LameSacan' + f'\n{self.lame.CYAN} '
         )
         print(menu)
         mod_selection = input('[Input] Enter the Menu Number and press ENTER: ')
@@ -63,7 +62,7 @@ class ConfigMenu:
             if int(mod_selection) == 1:
                 self.callPortScanner()
             elif int(mod_selection) == 2:
-                self.callVulnScanner()
+                self.vuln.new_scan()
             elif int(mod_selection) == 99:
                 self.do_exit()
             else:
@@ -74,4 +73,3 @@ class ConfigMenu:
     def load_menu(self):
         # TODO: create a function that displays menu options and takes user input
         self.print_options()
-        pass

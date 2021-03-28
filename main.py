@@ -1,6 +1,4 @@
-from pprint import pprint
-import lameScanner
-import menu
+from libs import menu
 
 # lame = lameScanner.LameScan()
 # lame.new_run()

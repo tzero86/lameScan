@@ -1,6 +1,5 @@
 import socket
 from IPy import IP
-from clear_screen import clear
 from pyfiglet import Figlet
 from colorama import Fore
 import concurrent.futures
@@ -240,7 +239,7 @@ class LameScan:
         else:
             self.print_scan_results()
             self.save_to_json()
-        import menu
+        from libs import menu
         menu.ConfigMenu().print_options()
 
     #  handles printing the summary of the scan results.
@@ -263,11 +262,20 @@ class LameScan:
 
     # handles saving the scan results to a JSON file
     def save_to_json(self):
+        res_dir = './results/'
         raw_date = str(self.scan_results['scan_end'])
         date = re.sub('[,: ]', '', raw_date)
-        file_name = f'lameScan_results_{date}.json'
+        file_name = f'{res_dir}lameScan_results_{date}.json'
         f = open(file_name, 'w')
-        f.write(json.dumps(self.scan_results, indent=1))
+        f.write(json.dumps(self.scan_results, indent=4))
+        self.save_config()
+
+    # saves the results and scan configs to feed other modules
+    def save_config(self):
+        res_dir = './libs/'
+        file_name = f'{res_dir}res_cfg'
+        f = open(file_name, 'w')
+        f.write(json.dumps(self.scan_results, indent=4))
 
     def new_run(self):
         # clear()

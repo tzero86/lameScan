@@ -1,5 +1,7 @@
 # LameScan - Module v0.0.1 [Experimental]
 
+![](https://i.imgur.com/KpissWB.png)
+
 This branch is for development of the refactored version of lameScan, which will really be a module of 
 another app I'll be working on. The idea is to have a tool-kit-like type of app that will do port scanning,
 Vulnerability finder, ARP spoofing, etc.
@@ -7,11 +9,9 @@ Vulnerability finder, ARP spoofing, etc.
 Right now this is just an idea, I might or not be put into practice and developed. The main branch contains the 
 stand-alone version of the lameScanner which can be used until this future idea has its basic functionalities working.
 
-> **WARNING**: Documentation beyond this point is old and does not reflect the current changes of this branch. 
+> **WARNING**: Documentation beyond this point is old and does not necessarily reflect the current changes or features 
+> present on this branch. 
 > Yet another thing to update at some point.
-
-
-![](https://i.imgur.com/5IdZKc8.png)
 
 I've decided to start playing with Python3 again, and been putting bits and pieces 
 of what I learn into creating this basic example of a port scanner.
@@ -44,15 +44,17 @@ settings and let it run. Vulnerability module coming up.
 ## Future Enhancements
 
 - Add support to scan specific ports instead of range/TOP1000 only.
+- Compile open ports and banners in a by-target basis (right now all results are merged together)  
 - Enhance banner detection.
 - Enhance JSON export (possibly include other formats).
 - Implement a menu to configure scan settings, define targets, etc.
 - Add support to get parameters by commandline arguments  
 - Known Issues to be fixed:
   - [BUG] Need to tie the results to each target and provide a sectioned report by Target.
-  - [BUG] After a second scan, the user is no longer prompted to run another scan.
   - [BUG] The spacing between open port logs needs fixing, right now they all print a new line which is a waste 
     of screen space.
+- Bug Fixes:
+  - [FIXED] ~~After a second scan, the user is no longer prompted to run another scan.~~
 
 
 

@@ -69,7 +69,7 @@ class ConfigMenu:
             else:
                 self.print_options()
         except:
-            self.print_options()
+            self.do_exit()
 
     def load_menu(self):
         # TODO: create a function that displays menu options and takes user input

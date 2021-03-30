@@ -4,7 +4,7 @@ from libs import vulnScan
 
 class ConfigMenu:
     lame = lameScanner.LameScan()
-    vuln = vulnScan.vuln_scanner()
+    vuln = vulnScan.VulnScanner()
 
     # General settings
     VERSION = {

@@ -1,3 +1,4 @@
+import os
 import socket
 from IPy import IP
 from pyfiglet import Figlet
@@ -263,6 +264,10 @@ class LameScan:
     # handles saving the scan results to a JSON file
     def save_to_json(self):
         res_dir = './results/'
+        try:
+            os.makedirs(res_dir, exist_ok=True)
+        except OSError as error:
+            print(error)
         raw_date = str(self.scan_results['scan_end'])
         date = re.sub('[,: ]', '', raw_date)
         file_name = f'{res_dir}lameScan_results_{date}.json'
@@ -273,6 +278,10 @@ class LameScan:
     # saves the results and scan configs to feed other modules
     def save_config(self):
         res_dir = './libs/'
+        try:
+            os.makedirs(res_dir, exist_ok=True)
+        except OSError as error:
+            print(error)
         file_name = f'{res_dir}res_cfg'
         f = open(file_name, 'w')
         f.write(json.dumps(self.scan_results, indent=4))

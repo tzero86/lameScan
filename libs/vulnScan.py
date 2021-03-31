@@ -7,25 +7,29 @@ class VulnScanner:
     def __init__(self):
         pass
 
+    def show_menu(self):
+        from libs import menu
+        menu.ConfigMenu().print_options()
+
     # Handles calling an nmap scan via subprocess.
     # The ports used are those found by lameScan but needs support for direct user input.
     def nmap_scan(self, ports, ip):
         print(f' nmap_scan() function: args {ports, ip}')
         from libs import lameScanner
-        port = '-p'+ports
+        port = '-p '+ports
         ip = str(lameScanner.LameScan().check_ip(ip))
-        nmap_proc = subprocess.Popen(["nmap", "-sV", "--script", "vulners", ip, port]
-                                     , bufsize=2048, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        print(ip, ports)
+        nmap_proc = subprocess.Popen(["nmap", "-sV", "--script=vulners", f'-p{ports}', ip]
+                                     , bufsize=2048, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                      close_fds=True)
         nmap_proc.wait()
         stdout, stderr = nmap_proc.communicate()
         print(stdout.decode('utf-8'))
         print(stderr.decode('utf-8'))
-        self.show_menu()
-
-    def show_menu(self):
         from libs import menu
         menu.ConfigMenu().print_options()
+
+
 
     def read_config(self):
         # TODO: handle reading the results file to feed the vuln scan with target and ports
@@ -55,11 +59,13 @@ class VulnScanner:
                     # TODO: Fix this, we need to handle each target individually
                 elif len(cfg["open_ports_found"]) < 1:
                     print(f'[Error] You need to run a port scan first, from the menu select the appropriate option.')
-                    self.show_menu()
+                    from libs import menu
+                    menu.ConfigMenu().print_options()
                 else:
                     print(f'Parameters sent to nmap: {ports}')
                     self.nmap_scan(cfg['port'], cfg['targets'][0])
         except IOError as error:
             print(error)
             print(f'[Error] You need to run a port scan first, from the menu select the appropriate option.')
-            self.show_menu()
+            from libs import menu
+            menu.ConfigMenu().print_options()

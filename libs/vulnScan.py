@@ -1,8 +1,9 @@
 import json
 import subprocess
-
+import nmap3
 
 class VulnScanner:
+    nmap = nmap3.Nmap()
 
     def __init__(self):
         pass
@@ -21,13 +22,16 @@ class VulnScanner:
         print(ip, ports)
         # TODO this needs to also be a multi-threaded process, otherwise it's too slow
         #  (convert this to a subprocess by port)
-        nmap_proc = subprocess.Popen(["nmap", "-sV", "--script=vulners", '-T5', '-v4', f'-p{ports}', ip]
-                                     , bufsize=2048, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                     close_fds=True)
-        nmap_proc.wait()
-        stdout, stderr = nmap_proc.communicate()
-        print(stdout.decode('utf-8'))
-        print(stderr.decode('utf-8'))
+
+        print(json.dumps(self.nmap.scan_top_ports(target=ip, args=f'-p{ports} --script=vulners -sV'), indent=4))
+
+        #nmap_proc = subprocess.Popen(["nmap", "-sV", "--script=vulners", '-T5', '-v4', f'-p{ports}', ip]
+                                    # , bufsize=2048, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                     # close_fds=True)
+        #nmap_proc.wait()
+        #stdout, stderr = nmap_proc.communicate()
+        #print(stdout.decode('utf-8'))
+        #print(stderr.decode('utf-8'))
         from libs import menu
         menu.ConfigMenu().print_options()
 

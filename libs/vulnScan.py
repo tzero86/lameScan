@@ -22,8 +22,17 @@ class VulnScanner:
         print(ip, ports)
         # TODO this needs to also be a multi-threaded process, otherwise it's too slow
         #  (convert this to a subprocess by port)
+        re = self.nmap.scan_top_ports(target=ip, args=f'-p{ports} --script=vulners -sV')
+        results = json.loads(re)
+        vulns = None
+        for result in results[str(ip)]['ports']:
+            if 'scripts' in result:
+                vulns = result[0]['raw']
+            else:
+                print('No vulnerabilities found. Maybe try another scan to reveal other ports.')
+        print(vulns.decode('utf-8'))
 
-        print(json.dumps(self.nmap.scan_top_ports(target=ip, args=f'-p{ports} --script=vulners -sV'), indent=4))
+        print(json.dumps(results, indent=4))
 
         #nmap_proc = subprocess.Popen(["nmap", "-sV", "--script=vulners", '-T5', '-v4', f'-p{ports}', ip]
                                     # , bufsize=2048, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,

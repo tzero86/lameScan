@@ -217,10 +217,12 @@ class LameScan:
         ports_range = input(
             self.LBLUE + f'[?] Enter port range {self.MAGENTA}(e.g 1-65535){self.LBLUE} or '
                          f'press{self.MAGENTA} ENTER to scan TOP 1000{self.LBLUE} ports: ')
-        if '-' in ports_range:
+        print(f'[PORT_RANGE_RCV] {ports_range}')
+        if '-' in str(ports_range):
             ports = ports_range.split('-')
             self.scan_config['range']['low_port'] = int(ports[0])
             self.scan_config['range']['high_port'] = int(ports[1])
+            self.scan_config['run_top1k_ports'] = False
         else:
             #  alter scan to run IP + 1k common ports
             self.scan_config['run_top1k_ports'] = True
@@ -252,7 +254,7 @@ class LameScan:
         print(f'[Results] Scan Completed at: {self.scan_results["scan_end"]}')
         print(f'[Results] Scan Completed in: {round(self.t_end - self.t_start, 2)} seconds.')
         print(f'[Results] Total Open ports found: {len(self.scan_results["open_ports_found"])} ')
-        print(f'[Results] Number of Open ports detected: {self.scan_results["open_ports_found"]} ')
+        print(f'[Results] Open ports detected: {self.scan_results["open_ports_found"]} ')
         print(f'[Results] Open ports w/ Banners detected: {self.scan_results["ports_with_banner"]} ')
         print(
             '\n' + self.RED + '[------------------{*| Noli umquam discere desinere |*}------------------]' + self.WHITE

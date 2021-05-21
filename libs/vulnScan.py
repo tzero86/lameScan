@@ -1,6 +1,10 @@
+import concurrent.futures
+import functools
 import json
+import os
 import subprocess
 import nmap3
+
 
 class VulnScanner:
     nmap = nmap3.Nmap()
@@ -17,33 +21,46 @@ class VulnScanner:
     def nmap_scan(self, ports, ip):
         print(f' nmap_scan() function: args {ports, ip}')
         from libs import lameScanner
-        port = '-p '+ports
+        # port = '-p ' + ports
+        ports = list(ports.split(","))
         ip = str(lameScanner.LameScan().check_ip(ip))
         print(ip, ports)
         # TODO this needs to also be a multi-threaded process, otherwise it's too slow
         #  (convert this to a subprocess by port)
-        re = self.nmap.scan_top_ports(target=ip, args=f'-p{ports} --script=vulners -sV')
-        results = json.loads(re)
-        vulns = None
-        for result in results[str(ip)]['ports']:
-            if 'scripts' in result:
-                vulns = result[0]['raw']
-            else:
-                print('No vulnerabilities found. Maybe try another scan to reveal other ports.')
-        print(vulns.decode('utf-8'))
-
-        print(json.dumps(results, indent=4))
-
-        #nmap_proc = subprocess.Popen(["nmap", "-sV", "--script=vulners", '-T5', '-v4', f'-p{ports}', ip]
-                                    # , bufsize=2048, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                     # close_fds=True)
-        #nmap_proc.wait()
-        #stdout, stderr = nmap_proc.communicate()
-        #print(stdout.decode('utf-8'))
-        #print(stderr.decode('utf-8'))
+        partial = functools.partial(self.threaded_scan, ip)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=60) as threaded_scans:
+            list(threaded_scans.map(partial, ports))
         from libs import menu
         menu.ConfigMenu().print_options()
 
+    def threaded_scan(self, target, port):
+        print(f'[Parameters received] {target, port}')
+        res_dir = './nmap_by_port_results/'
+        target_dir = res_dir + f'{target}/'
+        try:
+            os.makedirs(res_dir, exist_ok=True)
+            os.makedirs(target_dir, exist_ok=True)
+        except OSError as error:
+            print(error)
+        nmap_proc = subprocess.Popen(["nmap", "-sV", "--script=vulners", '-T5', '-v4', f'-p{port}', '-oX',
+                                      f"./nmap_by_port_results/{target}/result_port_{port}.xml", target]
+                                     , bufsize=2048, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                     close_fds=True)
+        nmap_proc.wait()
+        stdout, stderr = nmap_proc.communicate()
+        print(stdout.decode('utf-8'))
+        print(stderr.decode('utf-8'))
+        results = json.loads(stdout)
+        print(f'[JSON Dump] {json.dumps(results, indent=4)}')
+        vulns = None
+        for result in results[str(target)]['ports']:
+            if 'scripts' in result:
+                vulns = result[0]['raw']
+            else:
+                print(
+                    f'[Scan_Result] Target: {target} Ports: {port} - No vulnerabilities found.')
+        print(f'[Decoded Data] {vulns.decode("utf-8")}')
+        print(f'[JSON Dump] {json.dumps(results, indent=4)}')
 
     def read_config(self):
         # TODO: handle reading the results file to feed the vuln scan with target and ports

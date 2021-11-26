@@ -1,4 +1,4 @@
-pyfiglet==0.8.post1
 colorama==0.4.4
-clear_screen==0.1.14
 IPy==1.01
+pyfiglet==0.8.post1
+python3_nmap==1.5.1

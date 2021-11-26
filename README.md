@@ -37,7 +37,7 @@ Then run the following to install the requirements:
 After that is done just execute with:
 - `python3 main.py`
 
-The just use ir as per the program's instructions, it is very simple. Just provide the target, port range and optional
+Then just use it as per the program's instructions, it is very simple. Just provide the target, port range and optional
 settings and let it run. Vulnerability module coming up.
 
   
